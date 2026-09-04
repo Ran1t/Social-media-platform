@@ -87,3 +87,7 @@ export const loginUser=async(req,res)=>{
     res.status(500).json({message:"Internal Server Error",error:error})
   }
 }
+
+export const getUser=async(req,res)=>{
+  res.status(200).json({message:"User Authenticated",userData:req.user})
+}
