@@ -17,7 +17,7 @@ mongoose.connect(process.env.dbUrl).then(() => {
 
 app.use(express.json())
 app.use(cookieParser())
-app.use("/users",userRoutes)
+app.use("/customers",userRoutes)
 
 
 app.listen(PORT,()=>{
