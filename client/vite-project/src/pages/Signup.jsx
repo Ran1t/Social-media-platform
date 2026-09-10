@@ -1,5 +1,6 @@
 import {React,useState} from 'react'
 import { Link } from 'react-router-dom'
+import { axiosInstance } from '../axiosCalls/axios'
 
 function Signup() {
 
@@ -7,9 +8,18 @@ function Signup() {
 
     const handleChange=(e)=>{
         setForm((prev)=>({...prev,[e.target.name]:e.target.value}))
-        console.log(form)
     }
 
+    const handleSubmit=async (e)=>{
+        e.preventDefault()
+        try{
+          await axiosInstance.post("/users/register",form)
+          console.log("User Registered")
+        }
+        catch(error){
+          console.log(error)
+        }
+    }
 
 
   return (
@@ -22,10 +32,10 @@ function Signup() {
         
         {/* Brand Header */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 shadow-lg shadow-indigo-500/30 mb-2">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-linear-to-tr from-indigo-500 to-violet-500 shadow-lg shadow-indigo-500/30 mb-2">
             <span className="text-xl font-black text-white tracking-wider">SST</span>
           </div>
-          <h2 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-extrabold tracking-tight bg-linear-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
             Join SST Social
           </h2>
           <p className="text-sm text-slate-400">
@@ -102,7 +112,8 @@ function Signup() {
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 active:scale-[0.99] shadow-lg shadow-indigo-500/25 transition duration-150 ease-in-out cursor-pointer"
+              onClick={handleSubmit}
+              className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-linear-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 active:scale-[0.99] shadow-lg shadow-indigo-500/25 transition duration-150 ease-in-out cursor-pointer"
             >
               Create Account
             </button>
