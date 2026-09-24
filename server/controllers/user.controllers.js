@@ -81,7 +81,7 @@ export const loginUser=async(req,res)=>{
     const token= genToken(user._id)
     res.cookie("token",token,cookiesOptions)
 
-    res.status(200).json({ message: "User Logged In"});
+    res.status(200).json({ message: "User Logged In",userData:user});
   }
   catch(error){
     res.status(500).json({message:"Internal Server Error",error:error})

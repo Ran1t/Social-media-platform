@@ -1,12 +1,10 @@
-import {React,useState} from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { axiosInstance } from '../axiosCalls/axios'
 
 function Signup() {
 
     const [form,setForm]=useState({name:"",username:"",email:"",password:""})
-
-    const [loader,setLoader] =useState(false)
 
     const handleChange=(e)=>{
         setForm((prev)=>({...prev,[e.target.name]:e.target.value}))
@@ -51,7 +49,7 @@ function Signup() {
         </div>
 
         {/* Form */}
-        <form className="mt-6 space-y-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
           {/* Name Field */}
           <div>
             <label htmlFor="name" className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
@@ -119,7 +117,6 @@ function Signup() {
           <div className="pt-2">
             <button
               type="submit"
-              onClick={handleSubmit}
               className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-linear-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 active:scale-[0.99] shadow-lg shadow-indigo-500/25 transition duration-150 ease-in-out cursor-pointer"
             >
               Create Account

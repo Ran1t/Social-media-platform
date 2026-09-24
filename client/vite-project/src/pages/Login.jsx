@@ -1,12 +1,13 @@
-import {React,useState} from 'react'
+import { useState } from 'react'
 import { Link,useNavigate } from 'react-router-dom'
 import { axiosInstance } from '../axiosCalls/axios'
+import { useAuth } from '../context/AuthContext'
 
 function Login() {
 
     const [form,setForm]=useState({email:"",password:""})
 
-    const [loader,setLoader] =useState(false)
+    const {setUser}=useAuth()
 
     const navigate = useNavigate()
 
@@ -17,9 +18,10 @@ function Login() {
     const handleSubmit=async (e)=>{
         e.preventDefault()
         try{
-          await axiosInstance.post("/users/login",form)
+          const user=await axiosInstance.post("/users/login",form)
           console.log("User Logged in")
 
+          setUser(user.data.userData)
           navigate("/home")
         }
         catch(error){
@@ -50,7 +52,7 @@ function Login() {
         </div>
 
         {/* Form */}
-        <form className="mt-6 space-y-4" onSubmit={(e) => e.preventDefault()}>
+        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
     
           {/* Email Field */}
           <div>
@@ -86,7 +88,6 @@ function Login() {
           <div className="pt-2">
             <button
               type="submit"
-              onClick={handleSubmit}
               className="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-linear-to-r from-indigo-500 to-violet-600 hover:from-indigo-600 hover:to-violet-700 active:scale-[0.99] shadow-lg shadow-indigo-500/25 transition duration-150 ease-in-out cursor-pointer"
             >
               Login
