@@ -96,3 +96,19 @@ export const logoutUser=async(req,res)=>{
     res.clearCookie("token",cookiesOptions)
     res.status(200).json({"message":"Logged out Successfully"})
 }
+
+export const getUserProfile= async(req,res)=>{
+  try{
+    const {username} = req.params
+
+    const user= await User.findOne({username})
+
+    if(!user){
+      return res.status(404).json({message:"User Not Found"})
+    }
+    return res.status(200).json({message:"User Found", profileData: user})
+  }
+  catch(error){
+    return res.status(500).json({message:"Internal Server Error", error})
+  }
+}

@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
+import {useParams} from "react-router-dom"
 
 function Profile() {
   const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('posts')
-  console.log(user)
+  const {username}=useParams()                       // to read the parameter of the url
+  console.log(username)
 
   if (!user) {
     return (
@@ -32,7 +34,7 @@ function Profile() {
         <div className="bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-3xl overflow-hidden shadow-2xl relative">
           
           {/* Banner */}
-          <div className="h-32 bg-gradient-to-r from-indigo-600 via-violet-600 to-pink-500 opacity-80" />
+          <div className="h-32 bg-linear-to-r from-indigo-600 via-violet-600 to-pink-500 opacity-80" />
 
           {/* Profile Details */}
           <div className="px-6 pb-6 relative">
@@ -158,7 +160,7 @@ function Profile() {
             reelsList.length > 0 ? (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {reelsList.map((reel, index) => (
-                  <div key={reel._id || index} className="aspect-[9/16] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:opacity-90 transition cursor-pointer">
+                  <div key={reel._id || index} className="aspect-9/16 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden hover:opacity-90 transition cursor-pointer">
                     {reel.videoUrl ? (
                       <video src={reel.videoUrl} className="w-full h-full object-cover" />
                     ) : (
