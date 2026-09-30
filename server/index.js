@@ -10,10 +10,18 @@ const PORT=8089
 
 dotenv.config()
 
-mongoose.connect(process.env.dbUrl).then(() => {
+const dbUrl = process.env.dbUrl || process.env.MONGODB_URI || process.env.DB_URL
+
+if (!dbUrl) {
+    console.error("MongoDB URL is missing. Set dbUrl or MONGODB_URI in .env")
+    process.exit(1)
+}
+
+mongoose.connect(dbUrl).then(() => {
     console.log("DB Connected")
 }).catch((err) => {
-    console.log(err)
+    console.log("MongoDB connection error:", err.message)
+    process.exit(1)
 })
 
 app.use(cors({

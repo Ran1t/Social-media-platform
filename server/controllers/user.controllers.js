@@ -112,3 +112,79 @@ export const getUserProfile= async(req,res)=>{
     return res.status(500).json({message:"Internal Server Error", error})
   }
 }
+
+// follow controller
+
+export const followUser=async(req,res)=>{
+  try{
+    const currentUserId = req.user._id
+
+    const targetUserId =req.params.id
+
+    const targetUser =await User.findById({targetUserId})
+
+    // Do all the validations 
+
+    const alreadyFollowing = targetUser.followers.some((id)=>id.toString()===currentUserId)
+
+    if(alreadyFollowing){
+      return res.status(409).json({message:"User Already Following"})
+    }
+
+    if(currentUserId.toString() == targetUserId.toString()){
+      return res.status(409).json({message:"You cannot follow yourself"})
+    }
+
+    await User.findIdAndUpdate({currentUserId},{
+      $addToSet : {followings : targetUserId}
+    })
+
+    await User.findIdAndUpdate({targetUserId},{
+      $addToSet : {followers : currentUserId}
+    })
+
+    return res.status(201).json({message:"User Followed"})
+
+  }
+  catch(error){
+    res.status(500).json({message:"Internal Server Error",error:error})
+  }
+}
+
+// unfollow controller
+
+export const unfollowUser=async(req,res)=>{
+  try{
+    const currentUserId = req.user._id
+
+    const targetUserId =req.params.id
+
+    const targetUser =await User.findById({targetUserId})
+
+    // Do all the validations 
+
+    const alreadyFollowing = targetUser.followers.some((id)=>id.toString()===currentUserId)
+
+    if(!alreadyFollowing){
+      return res.status(409).json({message:"User Already is Unfollowed"})
+    }
+
+    if(currentUserId.toString() == targetUserId.toString()){
+      return res.status(409).json({message:"You cannot unfollow yourself"})
+    }
+
+    await User.findIdAndUpdate({currentUserId},{
+      $pull : {followings : targetUserId}         // pull is used to remove from set
+    })
+
+    await User.findIdAndUpdate({targetUserId},{
+      $pull : {followers : currentUserId}
+    })
+
+    return res.status(201).json({message:"User unFollowed"})
+
+  }
+  catch(error){
+    res.status(500).json({message:"Internal Server Error",error:error})
+  }
+}
