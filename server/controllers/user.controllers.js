@@ -113,6 +113,31 @@ export const getUserProfile= async(req,res)=>{
   }
 }
 
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, username, email, bio } = req.body
+    const updates = {}
+
+    if (name !== undefined) updates.name = name.trim()
+    if (username !== undefined) updates.username = username.trim()
+    if (email !== undefined) updates.email = email.trim()
+    if (bio !== undefined) updates.bio = bio
+    if (req.file) updates.profileImage = `/uploads/profile/${req.file.filename}`
+    const user = await User.findByIdAndUpdate(req.user._id, updates, {
+      new: true,
+      runValidators: true,
+    }).select("-password")
+
+    if (!user) return res.status(404).json({ message: "User Not Found" })
+    return res.status(200).json({ message: "Profile Updated", user })
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({ message: "Username or email already exists" })
+    }
+    return res.status(500).json({ message: "Internal Server Error", error })
+  }
+}
+
 // follow controller
 
 export const followUser=async(req,res)=>{
@@ -121,11 +146,15 @@ export const followUser=async(req,res)=>{
 
     const targetUserId =req.params.id
 
-    const targetUser =await User.findById({targetUserId})
+    const targetUser = await User.findById(targetUserId)
+
+    if (!targetUser) {
+      return res.status(404).json({ message: "User Not Found" })
+    }
 
     // Do all the validations 
 
-    const alreadyFollowing = targetUser.followers.some((id)=>id.toString()===currentUserId)
+    const alreadyFollowing = targetUser.followers.some((id)=>id.toString()===currentUserId.toString())
 
     if(alreadyFollowing){
       return res.status(409).json({message:"User Already Following"})
@@ -135,11 +164,11 @@ export const followUser=async(req,res)=>{
       return res.status(409).json({message:"You cannot follow yourself"})
     }
 
-    await User.findIdAndUpdate({currentUserId},{
+    await User.findByIdAndUpdate(currentUserId,{
       $addToSet : {followings : targetUserId}
     })
 
-    await User.findIdAndUpdate({targetUserId},{
+    await User.findByIdAndUpdate(targetUserId,{
       $addToSet : {followers : currentUserId}
     })
 
@@ -159,11 +188,15 @@ export const unfollowUser=async(req,res)=>{
 
     const targetUserId =req.params.id
 
-    const targetUser =await User.findById({targetUserId})
+    const targetUser = await User.findById(targetUserId)
 
     // Do all the validations 
 
-    const alreadyFollowing = targetUser.followers.some((id)=>id.toString()===currentUserId)
+    if (!targetUser) {
+      return res.status(404).json({ message: 'User Not Found' })
+    }
+
+    const alreadyFollowing = targetUser.followers.some((id)=>id.toString()===currentUserId.toString())
 
     if(!alreadyFollowing){
       return res.status(409).json({message:"User Already is Unfollowed"})
@@ -173,11 +206,11 @@ export const unfollowUser=async(req,res)=>{
       return res.status(409).json({message:"You cannot unfollow yourself"})
     }
 
-    await User.findIdAndUpdate({currentUserId},{
+    await User.findByIdAndUpdate(currentUserId,{
       $pull : {followings : targetUserId}         // pull is used to remove from set
     })
 
-    await User.findIdAndUpdate({targetUserId},{
+    await User.findByIdAndUpdate(targetUserId,{
       $pull : {followers : currentUserId}
     })
 

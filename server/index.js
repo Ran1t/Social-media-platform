@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import userRoutes from "./routes/user.routes.js"
 import cookieParser from "cookie-parser"
 import cors from "cors"
+import { fileURLToPath } from "node:url"
 
 const app=express()
 const PORT=8089
@@ -31,6 +32,7 @@ app.use(cors({
 
 app.use(express.json())
 app.use(cookieParser())
+app.use("/uploads", express.static(fileURLToPath(new URL("./uploads/", import.meta.url))))
 app.use("/users",userRoutes)
 
 
